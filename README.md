@@ -4,12 +4,12 @@ Independent neural network for each population member. Recommended population si
 Driver examples in /examples/ folder. 
 
 Evolutionary methods:
--mutation (hardfork means to reroll a trait entirely, softfork to roll a nudge to existing trait)
--tournament (given bracket size, this slot's output will be replaced with highest scoring member)
--crossover (cross networks and ideas)
--reroll (totally reroll a population member, useful for introducing new genes consistently)
--1-member-elitism (a single member who has the highest score gets to stay in the next simulation)
--stayover (like elitism in that a slot selected for stayover can stay into next simulation, but is randomized. helps lower selection pressure)
+- mutation (hardfork means to reroll a trait entirely, softfork to roll a nudge to existing trait)
+- tournament (given bracket size, this slot's output will be replaced with highest scoring member)
+- crossover (cross networks and ideas)
+- reroll (totally reroll a population member, useful for introducing new genes consistently)
+- 1-member-elitism (a single member who has the highest score gets to stay in the next simulation)
+- stayover (like elitism in that a slot selected for stayover can stay into next simulation, but is randomized. helps lower selection pressure)
 
 a note on elitism: multiple member elitism tends to be quite uniform in that the elites copy each other and tend to destroy the variability/diversity that gives unique solutions a chance.
 
