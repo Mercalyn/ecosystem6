@@ -1,0 +1,2 @@
+pytorch bincount will count values "bins" and output a range 0-max value seen with count
+using minlength will guarantee a length

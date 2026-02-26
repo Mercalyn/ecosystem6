@@ -1,0 +1,58 @@
+{
+    /*
+    config override for anything in eco_6/config
+    pass following example into NevoDirector constructor
+    with ndir = eco.evo.NevoDirector(.., .., ["exampleDebug", "alsoOverride"])
+    --
+    can split named configs and load in separate custom configs like shown
+    */
+    
+    exampleDebug: {
+        evo: {
+            rolls: {
+                tourney:  8,
+                cross:    5,
+            },
+        },
+        grid: {
+            dropout: .5,
+        },
+    },
+    alsoOverride: {
+        sim: {
+            graphing: true,
+        },
+    },
+    
+    /* ------------------------------------------------------------------------------- */
+    mainGrid: { // base
+        grid: {
+            featureInputLength: 1,
+            layers: [
+                { height: 1, squash: "linear", memory: "lstm" },
+            ],
+        },
+        evo: {
+            tournaments: {
+                maxCompressions: 6,
+            },
+        },
+        sim: {
+            numTimesteps: 5,
+        },
+    },
+    
+    debug: { // debug and testing
+        sim: {
+            popSize: 6,
+            numGenerations: 2,
+        },
+    },
+    
+    production: { // for real
+        sim: {
+            popSize: 80,
+            numGenerations: 80,
+        },
+    },
+}

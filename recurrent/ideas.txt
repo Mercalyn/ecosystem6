@@ -1,0 +1,10 @@
+I'll go ahead and read some papers first
+figure out what Attention truly is
+
+but my idea right now is a kind of long range lstm, where either the forget/add gates to the long term memory actually only fire every 10th timestep
+OR
+there is an additional gene-weight (decision) that gets binarized 0,1 where it member simply chooses whether or not to update its own long term mem that timestep
+possibly two separate decisions for forgetting or for adding to
+possibly even another one to decide whether or not to use, but better to just always use
+
+will prob call it LR-MEM

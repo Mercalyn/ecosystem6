@@ -1,0 +1,15 @@
+{
+    sim: {
+        
+        /* simulation config */
+        
+        popSize: 80,
+        populate: "new", // new or load, populate being phased out
+        numGenerations: 20,
+        numTimesteps: 20,
+        
+        graphing: false,
+        allowHalfPrecision: false, // for low precision speedups
+    }
+}
+    

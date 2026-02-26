@@ -1,0 +1,43 @@
+spec for version: 2.0
+--------------------------------
+
+file types:
+
+
+.xtn >> generic tensor dump (ex. market data), loads and saves using pytorch pickle, straight into GPU -- alt. to using SQLite if not filter/sorting
+  .info: string -- description of all other contents, \n separated
+  .version: float -- spec version
+  .named_dimensionality: torch.Tensor, ex: .raw_OHLC_3d
+
+
+.tcdata >> texture crate data
+  .stats: {popSize: int, featureInputLength: int, layers: [{height: int, squash: str, memory: bool},...]}
+  .date: string -- ex. "12Aug2024--1542"
+  .version: float -- spec version (2.0)
+  .crate: struct of texture crate contents, ex keys: wt_0, wt_act, bs_feat, bs_act, values: weights&bias 3d tensors
+
+
+.s4 >> tracked session of one/or/more pop member (timeline of corresponding feature/actionspace)
+  .version: float -- spec version
+  .info: str of named tensors and shape
+  .trackable: {named tensors}
+
+
+--------------------------------
+file structure:
+ecosys_5
+  /examples/
+    /<example_title>/
+      <example_title>.py
+      config.json5
+      population.tcdata
+      
+  /modules/
+    <modules>.py
+  /config/
+    evo.json5
+    director.json5
+    grid.json5
+  <utils>.py
+  ecosys.py (main module exporter)
+  

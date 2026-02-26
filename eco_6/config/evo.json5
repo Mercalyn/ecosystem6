@@ -1,0 +1,41 @@
+{
+    evo: {
+        
+        /* evolution config */
+        
+        rolls: {
+            /* 
+            evolution methods operated on populated by %
+            num of rolls total: 20
+            excess/remainder goes to tourney
+            */
+            elites:   0,
+            tourney:  6,
+            cross:    4,
+            reroll:   1,
+            stayover: 4,
+            fork:     5,
+        },
+        
+        rates: {
+            softforkRate: 0.08,   // .002 to .08
+            softforkMult: 0.02,   // .02 to .2
+            hardforkRate: 0.0002, // .0005 or lower
+            minforkRate:  0.0,    // 0 to .0005
+        },
+        
+        tournaments: {
+            maxCompressions: 1,
+        },
+        
+        defrost: {
+            /*
+            1.0 let all layers change always
+            otherwise its the random % to defrost to allow evolution
+            currently not implemented
+            */
+            chance: 1.0,
+        },
+    }
+}
+    

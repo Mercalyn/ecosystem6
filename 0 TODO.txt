@@ -1,0 +1,44 @@
+DIRECTOR
+[x] feeding into multigrid forward pass, get rid of two separate func calls (renamed, they make sense)
+[x] change args to file config files, in /config/ named obj inside for customizeability
+[/] fix logging so no need to print log, dco([channels], input_msg)# debug eco, lco([channels]) # log out channel (otherwise dont), channel consistency between functions .. add later??
+[x] args to file config files: gpu config stuff
+
+MULTIGRID
+[x] shorthand
+[x] new layer [] system
+[x] verify output
+[x] .tcdata versioning
+[x] dropout
+[x] add lstm functionality
+[x] remove gridFeed dropout to config
+[x] see if can do current @= to matmul into, yes, you can!
+[x] rename tex.crate contents from w_a, b_0, etc to wt_ bs_, _0 _1 _act so it is more descriptive (getting rid of _i -> _0)
+[x] rename contents again to 0_dense_wt, 0_dense_bs, act_dense_wt, act_dense_bs, 0_lstm_
+[x] delete add/del hidden depth/height, might readd later if needed crucially
+
+CONV
+[x] delete (it never functioned well)
+
+SSN
+[x] fix graphing
+
+EVO
+[x] scoreTexture convert to _1d, opTourney, destMask
+[x] shorthand
+[/] evo destination mask enum - tensors wont accept an enum
+[x] rewrite tournament efficient
+[x] verify output
+[x] get rid of elites permanently (except for topmost)
+[x] defrost to config
+[x] evostep split return statement something else for clarity
+[-] rewrite all to not return but mutate
+
+EXAMPLES / TESTS
+[-] lstm test
+[-] new example: parametric estimator (t) in, (x,y) out, think limacon or rose petals
+[x] polecart with only 80 pop.. also test for deeper nets.. also test lstm + only position. 80 pops works but lstm only pos very moderate..
+[x] polecart physics shorthand
+
+notes:
+lstm tester

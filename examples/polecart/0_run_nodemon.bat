@@ -1,0 +1,1 @@
+nodemon --ext py,json5 --watch ../../ %1

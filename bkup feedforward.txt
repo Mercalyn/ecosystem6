@@ -1,0 +1,114 @@
+"""
+        Oh the brilliant simplicity of a forward-only network with no backpropagation
+        Verified to work exactly as pytorch's nn model feed forward (but with population dim:0)
+        _i layer actually refers to 0th hidden layer, which has a different 
+        weights size so it is separated from remainder hidden layers
+        --
+        feature inputs can be [featureInputLength] or [popSize, 1, featureInputLength]
+        weights [popSize, prior neuron height, curr neuron height]
+        bias [popSize, 1, curr nh]
+        action output [popSize, actionHeight]
+        --
+        dropout:
+        dropout chance, size of bias[2] since that is the neuron height size
+        if a neuron is dropped, it is dropped for all pop members
+        --
+        this layer is technically the first hidden layer and so it has dropout
+        dropout is not performed on actual feature inputs
+        --
+        we also need to count how many cols were actually dropped
+        training: scale up the output after squash for training
+        validation: no scaling (higher proc training, lower proc in use)
+        --
+        random drop happens for randperm and not rand, this way we are 
+        guaranteed to have exactly dropout rate and not divide/0
+        """
+        dropout = self.gridcon["dropout"]
+        
+        # named squash functions
+        squash = {
+            "hardtanh22": lambda x: torch.nn.functional.hardtanh(x, -2., 2.),
+            "relu6": lambda x: torch.nn.functional.relu6(x),
+            "argmax": lambda x: torch.argmax(x, dim=2),
+        }
+        
+        # no in-place operations here, be explicit with order
+        FEED_DEBUG = False # debug statements
+        if FEED_DEBUG: print(f"\ndropout: {dropout}")
+        if FEED_DEBUG: print(f"\n--------------\nfeature inputs:\n{self.currVal}")
+        
+        # ---------------------------------- _i ----------------------------------
+        # matrix multiply, only this layer broadcasts if provided 1d input shape
+        # otherwise no broadcast for 3d
+        self.currVal @= self.textureCrate["wt_i"]
+        if FEED_DEBUG: print(f"\n----\nwt_i:\n{self.textureCrate['wt_i']}")
+        if FEED_DEBUG: print(f"\nresults:\n{self.currVal}")
+        
+        # 2d -> 3d, only reshape on input layer since broadcasting will auto-flatten to 2d >> keep 3d
+        self.currVal = torch.reshape(self.currVal, [self.popSize, 1, self.gridcon["hiddenHeight"]])
+        
+        self.currVal += self.textureCrate["bs_i"] # biases
+        self.currVal = squash[self.gridcon["finalSquash"]](self.currVal) # squash func
+        if FEED_DEBUG: print(f"\n_i hardtanh result >>\n{self.currVal}")
+        
+        # dropout
+        if dropout != 0.0:
+            # dropout is some value
+            numNeurons = self.textureCrate["bs_i"].size()[2]
+            dropPerm = torch.randperm(n=numNeurons, device=self.gconf["device"], dtype=torch.int)
+            if FEED_DEBUG: print(f"\ndropPerm:\n{dropPerm}")
+            
+            thresh = numNeurons * dropout # = exactly neuron want to include
+            dropMask = torch.where(dropPerm < thresh, 0, 1) # < means exclude that neuron # 0=drop, 1=keep
+            self.currVal = torch.mul(self.currVal, dropMask)
+            if FEED_DEBUG: print(f"\n_i dropped / kept >>\n{self.currVal}")
+            
+            scaleFactor = numNeurons / torch.sum(dropMask)
+            if FEED_DEBUG: print(f"\n_i scaleFactor >>\n{scaleFactor}")
+            
+            self.currVal = torch.mul(self.currVal, scaleFactor)
+            if FEED_DEBUG: print(f"\n_i dropout result >>\n{self.currVal}")
+        
+        # ---------------------------------- _hidden ----------------------------------
+        for hd in range(self.gridcon["hiddenDepth"]):
+            if FEED_DEBUG: print(f"HD: {hd}")
+            
+            self.currVal @= self.textureCrate[f"wt_{hd}"] # matmul
+            self.currVal += self.textureCrate[f"bs_{hd}"] # biases
+            self.currVal = squash[self.gridcon["finalSquash"]](self.currVal) # squash func
+            if FEED_DEBUG: print(f"\n_{hd} squash & result >>\n{self.currVal}")
+            
+            # dropout
+            if dropout != 0.0:
+                # dropout is some value
+                numNeurons = self.textureCrate[f"bs_{hd}"].size()[2]
+                dropPerm = torch.randperm(n=numNeurons, device=self.gpu, dtype=torch.int)
+                if FEED_DEBUG: print(f"\ndropPerm:\n{dropPerm}")
+                
+                thresh = numNeurons * dropout # = exactly neuron want to include
+                if FEED_DEBUG: print(f"\nthresh:\n{thresh}")
+                
+                dropMask = torch.where(dropPerm < thresh, 0, 1) # < means exclude that neuron # 0=drop, 1=keep
+                if FEED_DEBUG: print(f"\ndropMask:\n{dropMask}")
+                
+                self.currVal = torch.mul(self.currVal, dropMask)
+                if FEED_DEBUG: print(f"\n_{hd} dropped / kept >>\n{self.currVal}")
+                
+                scaleFactor = numNeurons / torch.sum(dropMask)
+                if FEED_DEBUG: print(f"\n_{hd} scaleFactor >>\n{scaleFactor}")
+                
+                self.currVal = torch.mul(self.currVal, scaleFactor)
+                if FEED_DEBUG: print(f"\n_{hd} dropout result >>\n{self.currVal}")
+        
+        
+        # ---------------------------------- _a ----------------------------------
+        self.currVal @= self.textureCrate[f"wt_a"] # matmul
+        self.currVal += self.textureCrate[f"bs_a"] # add biases
+        
+        self.currVal = squash[self.gridcon["finalSquash"]](self.currVal) # squash func
+        
+        # dropout does not apply to action output layer
+        
+        # flatten
+        self.currVal = torch.squeeze(self.currVal)
+        if FEED_DEBUG: print(f"\nflattened final result >>\n{self.currVal}")

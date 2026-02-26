@@ -1,0 +1,24 @@
+{
+    grid: {
+        
+        /* grid config */
+        
+        dropout: 0.0, // 0.0 for none // only for training
+        l2Penalty: 0, // 0 for none
+        
+        /* the following will certainly need to be customized per problem */
+        
+        featureInputLength: 3,
+        layers: [
+        /*
+            an example:
+            { // dense by default
+                height: 3,            // num of nodes in this layer
+                squash: "hardtanh22", // hardtanh22, relu6, argmax
+                memory: false         // lstm in future
+            },
+        */
+        ],
+    }
+}
+    

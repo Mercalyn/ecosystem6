@@ -1,0 +1,7 @@
+at ~60 gens it figured out the exact combination to get memory to work (0 loss)
+
+5 timesteps total with prediction for last (only last timestep is scored), [1:end] are the same but [0] is 1.0 for A and .2 for B
+since it feeds only one number in per timestep, the system is forced to learn that the [0]th index contains the value for the last "correct" prediction
+simple, but effective proof that it does work.
+
+since lstm output does not scale even on "linear" squash mode, it was necessary to regularize 0-1
